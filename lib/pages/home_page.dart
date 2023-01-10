@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:taskapp/modules/task.dart';
 
 class HomePage extends StatefulWidget {
   HomePage();
@@ -13,8 +15,14 @@ class _HomePageState extends State<HomePage> {
   late double _deviceHeight, _deviceWidth;
 
   String? _newTaskContent;
+  Box? _box;
 
   _HomePageState();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,33 +34,56 @@ class _HomePageState extends State<HomePage> {
         toolbarHeight: _deviceHeight * 0.15,
         title: const Text("Todos", style: TextStyle(fontSize: 20)),
       ),
-      body: _tasksList(),
+      body: _taskView(),
       floatingActionButton: _addTaskButton(),
     );
   }
 
+  Widget _taskView() {
+    Hive.openBox('tasks');
+    return FutureBuilder(
+      future: Hive.openBox('tasks'),
+      builder: (BuildContext _context, AsyncSnapshot _snapshot) {
+        if (_snapshot.hasData) {
+          _box = _snapshot.data;
+          return _tasksList();
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
   Widget _tasksList() {
-    return ListView(
-      children: [
-        ListTile(
-          title: const Text("Waschen",
-              style: TextStyle(decoration: TextDecoration.lineThrough)),
-          subtitle: Text(DateTime.now().toString()),
-          trailing: const Icon(
-            Icons.check_box_outlined,
+    List tasks = _box!.values.toList();
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (BuildContext _context, int _index) {
+        var task = Task.fromMap(tasks[_index]);
+        return ListTile(
+          title: Text(
+            task.content,
+            style: TextStyle(
+                decoration: task.done ? TextDecoration.lineThrough : null),
+          ),
+          subtitle: Text(task.timestamp.toString()),
+          trailing: Icon(
+            task.done
+                ? Icons.check_box_outlined
+                : Icons.check_box_outline_blank_outlined,
             color: Colors.red,
           ),
-        ),
-        ListTile(
-          title: const Text("Aufräumen",
-              style: TextStyle(decoration: TextDecoration.lineThrough)),
-          subtitle: Text(DateTime.now().toString()),
-          trailing: const Icon(
-            Icons.check_box_outlined,
-            color: Colors.red,
-          ),
-        )
-      ],
+          onTap: () {
+            task.done = !task.done;
+            _box!.putAt(_index, task.toMap());
+            setState(() {});
+          },
+          onLongPress: () {
+            _box!.deleteAt(_index);
+            setState(() {});
+          },
+        );
+      },
     );
   }
 
@@ -71,10 +102,22 @@ class _HomePageState extends State<HomePage> {
         return AlertDialog(
           title: const Text("Add New Task!"),
           content: TextField(
-            onSubmitted: (_value) {},
+            onSubmitted: (_) {
+              if (_newTaskContent != null) {
+                var _task = Task(
+                    content: _newTaskContent!,
+                    timestamp: DateTime.now(),
+                    done: false);
+                _box!.add(_task.toMap());
+                setState(() {
+                  _newTaskContent = null;
+                });
+              }
+            },
             onChanged: (_value) {
               setState(() {
                 _newTaskContent = _value;
+                Navigator.pop(context);
               });
             },
           ),
