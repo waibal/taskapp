@@ -13,6 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late double _deviceHeight, _deviceWidth;
+  int selectedIndex = 0;
 
   String? _newTaskContent;
   Box? _box;
@@ -31,11 +32,25 @@ class _HomePageState extends State<HomePage> {
     //print("Input Value: $_newTaskContent");
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: _deviceHeight * 0.15,
-        title: const Text("Todos", style: TextStyle(fontSize: 20)),
+        //toolbarHeight: _deviceHeight * 0.1,
+        title: const Text(("Todos"), style: TextStyle(fontSize: 20)),
       ),
       body: _taskView(),
       floatingActionButton: _addTaskButton(),
+      bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Colors.white.withOpacity(0.7),
+          selectedItemColor: Colors.white,
+          currentIndex: selectedIndex,
+          onTap: (index) => setState(() {
+                selectedIndex = index;
+              }),
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.fact_check_outlined), label: "Todos"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.done, size: 28), label: "Completed")
+          ]),
     );
   }
 
