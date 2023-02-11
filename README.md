@@ -1,18 +1,28 @@
 # taskapp
 
-A new Flutter project.
+Simple Todo App mit integrierter Datenbank Hive (Key-Value-Datenbank)
 
-## Getting Started
+## Lessons Learned
 
-This project is a starting point for a Flutter application.
+1. Plattformübergreifend vs. Installationsprozess
+ * benötigt viel Speicherplatz
+ * Geduld
 
-A few resources to get you started if this is your first Flutter project:
+2. Ausführen auf unterschiedlichen Geräten
+Zum Ausführen auf unterschiedlichen Geräten braucht es 
+ * Android Studio für mobile Geräte ausgeschlossen iOS, 
+ * XCode auf laufendem macOS System für macOS und iOS (dazu braucht es nur die Pipeline)
+ * von Flutter werden Emulatoren vorgeschlagen bzw. generiert aber befinden sich in Android Studio
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+ 3. Hohe Leistung
+  * Geschwindigkeit
+  * Reaktionsfähigkeit - Hot Deployment
+  * SDK's braucht kein zB. JavaScript zur Überbrückung für die Kommanikation zur Plattform
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  4. Dokumentation und Hilfestellung sehr gering
+  * durch Neuheit kleine Community und Dokumentation
+  * wenig hilfreiche Tutorials
 
-https://www.youtube.com/watch?v=mMgr47QBZWA&ab_channel=MitchKoko
+  5. 1 Codebase geht für mehrere Plattformen ohne speziell eine jeweilige Plattform zu spezifizieren
+
+  6. Learnings von Karsten

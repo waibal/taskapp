@@ -31,9 +31,13 @@ class _HomePageState extends State<HomePage> {
     _deviceWidth = MediaQuery.of(context).size.width;
     //print("Input Value: $_newTaskContent");
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         //toolbarHeight: _deviceHeight * 0.1,
-        title: const Text(("Todos"), style: TextStyle(fontSize: 20)),
+        backgroundColor: const Color.fromARGB(121, 255, 87, 146),
+        title: const Text(("Todos"),
+            style: TextStyle(
+                fontSize: 20, fontFamily: 'BebasNeue', color: Colors.white)),
       ),
       body: _taskView(),
       floatingActionButton: _addTaskButton(),
@@ -59,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     return FutureBuilder(
       future: Hive.openBox('tasks'),
       builder: (BuildContext _context, AsyncSnapshot _snapshot) {
-        if (_snapshot.hasData) {
+        if (_snapshot.connectionState == ConnectionState.done) {
           _box = _snapshot.data;
           return _tasksList();
         } else {
@@ -73,8 +77,8 @@ class _HomePageState extends State<HomePage> {
     List tasks = _box!.values.toList();
     return ListView.builder(
       itemCount: tasks.length,
-      itemBuilder: (BuildContext _context, int _index) {
-        var task = Task.fromMap(tasks[_index]);
+      itemBuilder: (BuildContext context, int index) {
+        var task = Task.fromMap(tasks[index]);
         return ListTile(
           title: Text(
             task.content,
@@ -90,11 +94,11 @@ class _HomePageState extends State<HomePage> {
           ),
           onTap: () {
             task.done = !task.done;
-            _box!.putAt(_index, task.toMap());
+            _box!.putAt(index, task.toMap());
             setState(() {});
           },
           onLongPress: () {
-            _box!.deleteAt(_index);
+            _box!.deleteAt(index);
             setState(() {});
           },
         );
@@ -110,6 +114,8 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
+  FocusNode focusNode = FocusNode();
+
   void _displayTaskPopup() {
     showDialog(
       context: context,
@@ -117,13 +123,14 @@ class _HomePageState extends State<HomePage> {
         return AlertDialog(
           title: const Text("Add New Task!"),
           content: TextField(
-            onSubmitted: (_) {
+            autofocus: true,
+            onSubmitted: (_value) {
               if (_newTaskContent != null) {
-                var _task = Task(
+                var task = Task(
                     content: _newTaskContent!,
                     timestamp: DateTime.now(),
                     done: false);
-                _box!.add(_task.toMap());
+                _box!.add(task.toMap());
                 setState(() {
                   _newTaskContent = null;
                 });
@@ -132,7 +139,7 @@ class _HomePageState extends State<HomePage> {
             onChanged: (_value) {
               setState(() {
                 _newTaskContent = _value;
-                Navigator.pop(context);
+                //Navigator.pop(_context);
               });
             },
           ),
